@@ -7,7 +7,7 @@ Epoch:		0
 License:	GPL
 Group:		Applications/System
 Source0:	http://www.xs4all.nl/~bsamwel/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
-# Source0-md5:	b1e6309e8331e0f4e6efd311c2d97fa8
+# Source0-md5:	b26fcc4df2b38da17e4f09872a1cfeda
 Source1:	%{name}.init
 URL:		http://www.xs4all.nl/~bsamwel/laptop_mode/
 PreReq:		rc-scripts
