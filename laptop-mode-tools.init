@@ -1,0 +1,47 @@
+#!/bin/sh
+# laptop-mode-tools
+#
+# chkconfig:	345 20 90
+# description:  laptop-mode-tools
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/laptop-mode-tools ]; then
+		msg_starting "laptop mode"
+		touch /var/run/laptop-mode-enabled
+		daemon /usr/sbin/laptop_mode auto
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/laptop-mode-tools
+	else
+		msg_already_running "laptop mode"
+	fi
+	;;
+  stop)
+	if [ -f /var/lock/subsys/laptop-mode-tools ]; then
+		msg_stopping "laptop mode"
+		daemon /usr/sbin/laptop_mode stop
+		rm -f /var/lock/subsys/laptop-mode-tools /var/run/laptop-mode-enabled
+	else
+		msg_not_running "laptop mode"
+	fi
+	;;
+  restart|force-reload)
+	$0 stop
+	$0 start
+	exit $?
+	;;
+  status)
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL
