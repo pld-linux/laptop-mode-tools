@@ -1,4 +1,5 @@
 Summary:	Laptop Mode Tools
+Summary(pl):	Narzêdzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.04
 Release:	0.1
@@ -23,30 +24,43 @@ grouping write activity on your disks, so that only reads of uncached
 data result in a disk spinup. It causes a significant improvement in
 battery life (for usage patterns that allow it).
 
+%description -l pl
+Tryb laptopowy (laptop mode) to "tryb" pracy j±dra umo¿liwiaj±cy
+wyd³u¿enie czasu ¿ycia baterii laptopa. Czyni to inteligentnie
+grupuj±c zapisy na dyski w ten sposób, ¿e tylko odczyt
+niezbuforowanych danych powoduje rozpêdzenie dysku. Powoduje znacz±c±
+poprawê czasu ¿ycia baterii.
+
 %package acpi
 Summary:	ACPI scripts for laptop mode tools
+Summary(pl):	Skrypty ACPI dla narzêdzi do trybu laptopowego
 Group:		Applications/System
-Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	acpid
+Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
 
 %description acpi
 ACPI scripts for laptop mode tools.
 
+%description acpi -l pl
+Skrypty ACPI dla narzêdzi do trybu laptopowego.
+
 %package apm
 Summary:	APM scripts for laptop mode tools
+Summary(pl):	Skrypty APM dla narzêdzi do trybu laptopowego
 Group:		Applications/System
-Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	apmd
+Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
 
 %description apm
 APM scripts for laptop mode tools.
 
+%description apm -l pl
+Skrypty APM dla narzêdzi do trybu laptopowego.
+
 %prep
 %setup -q
-
-%build
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -54,17 +68,17 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d,laptop-mode}
 install -d $RPM_BUILD_ROOT/etc/apm/event.d
 install -d $RPM_BUILD_ROOT/etc/acpi/{actions,events}
-install -d $RPM_BUILD_ROOT/{%{_mandir}/man8,%{_sbindir}}
+install -d $RPM_BUILD_ROOT{%{_mandir}/man8,%{_sbindir}}
 
 install man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
 
 install etc/laptop-mode/laptop-mode.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode
-install usr/sbin/laptop_mode usr/sbin/lm-syslog-setup $RPM_BUILD_ROOT/%{_sbindir}
+install usr/sbin/laptop_mode usr/sbin/lm-syslog-setup $RPM_BUILD_ROOT%{_sbindir}
 
 install etc/acpi/actions/* $RPM_BUILD_ROOT%{_sysconfdir}/acpi/actions
 install etc/acpi/events/* $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events
 
-install etc/apm/event.d/* $RPM_BUILD_ROOT%{_sysconfdir}/apm/event.d/
+install etc/apm/event.d/* $RPM_BUILD_ROOT%{_sysconfdir}/apm/event.d
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
 
