@@ -2,8 +2,7 @@ Summary:	Laptop Mode Tools
 Summary(pl):	Narzêdzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.05
-Release:	0.1
-Epoch:		0
+Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	http://www.xs4all.nl/~bsamwel/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
@@ -64,11 +63,8 @@ Skrypty APM dla narzêdzi do trybu laptopowego.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d,laptop-mode}
-install -d $RPM_BUILD_ROOT/etc/apm/event.d
-install -d $RPM_BUILD_ROOT/etc/acpi/{actions,events}
-install -d $RPM_BUILD_ROOT{%{_mandir}/man8,%{_sbindir}}
+install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d,laptop-mode,apm/event.d,acpi/{actions,events}} \
+	$RPM_BUILD_ROOT{%{_mandir}/man8,%{_sbindir}}
 
 install man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
 
@@ -104,11 +100,10 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc README Documentation/*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/laptop-mode/*.*
+%dir %{_sysconfdir}/laptop-mode
 %attr(754,root,root) /etc/rc.d/init.d/laptop-mode
 %attr(755,root,root) %{_sbindir}/*
-%dir %{_sysconfdir}/laptop-mode
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/laptop-mode/*.*
-
 %{_mandir}/man8/*.8*
 
 %files acpi
