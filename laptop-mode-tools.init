@@ -37,6 +37,7 @@ case "$1" in
 	exit $?
 	;;
   status)
+  	/usr/sbin/laptop_mode status
 	exit $?
 	;;
   *)
