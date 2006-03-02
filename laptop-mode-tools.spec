@@ -9,7 +9,7 @@ Source0:	http://www.xs4all.nl/~bsamwel/laptop_mode/tools/downloads/%{name}_%{ver
 # Source0-md5:	16238ceeafabade7e257064d89eb79ff
 Source1:	%{name}.init
 URL:		http://www.xs4all.nl/~bsamwel/laptop_mode/
-PreReq:		rc-scripts
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-scripts = %{epoch}:%{version}-%{release}
 BuildArch:	noarch
@@ -83,17 +83,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add laptop-mode
-if [ -f /var/lock/subsys/laptop-mode ]; then
-	/etc/rc.d/init.d/laptop-mode restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/laptop-mode start\" to start laptop-mode."
-fi
+%service laptop-mode restart
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/laptop-mode ]; then
-		/etc/rc.d/init.d/laptop-mode stop 1>&2
-	fi
+	%service laptop-mode stop
 	/sbin/chkconfig --del laptop-mode
 fi
 
