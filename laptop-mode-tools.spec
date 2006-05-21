@@ -2,7 +2,7 @@ Summary:	Laptop Mode Tools
 Summary(pl):	Narzêdzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.22
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/System
 Source0:	http://www.xs4all.nl/~bsamwel/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
