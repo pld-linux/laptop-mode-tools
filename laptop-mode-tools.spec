@@ -8,7 +8,7 @@ Group:		Applications/System
 Source0:	http://www.xs4all.nl/~bsamwel/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
 # Source0-md5:	16238ceeafabade7e257064d89eb79ff
 Source1:	%{name}.init
-URL:		http://www.xs4all.nl/~bsamwel/laptop_mode/
+URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-scripts = %{epoch}:%{version}-%{release}
