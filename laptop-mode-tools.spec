@@ -1,5 +1,5 @@
 Summary:	Laptop Mode Tools
-Summary(pl):	Narzêdzia do trybu laptopowego
+Summary(pl.UTF-8):   NarzÄ™dzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.32
 Release:	1
@@ -23,16 +23,16 @@ grouping write activity on your disks, so that only reads of uncached
 data result in a disk spinup. It causes a significant improvement in
 battery life (for usage patterns that allow it).
 
-%description -l pl
-Tryb laptopowy (laptop mode) to "tryb" pracy j±dra umo¿liwiaj±cy
-wyd³u¿enie czasu ¿ycia baterii laptopa. Czyni to inteligentnie
-grupuj±c zapisy na dyski w ten sposób, ¿e tylko odczyt
-niezbuforowanych danych powoduje rozpêdzenie dysku. Powoduje znacz±c±
-poprawê czasu ¿ycia baterii.
+%description -l pl.UTF-8
+Tryb laptopowy (laptop mode) to "tryb" pracy jÄ…dra umoÅ¼liwiajÄ…cy
+wydÅ‚uÅ¼enie czasu Å¼ycia baterii laptopa. Czyni to inteligentnie
+grupujÄ…c zapisy na dyski w ten sposÃ³b, Å¼e tylko odczyt
+niezbuforowanych danych powoduje rozpÄ™dzenie dysku. Powoduje znaczÄ…cÄ…
+poprawÄ™ czasu Å¼ycia baterii.
 
 %package acpi
 Summary:	ACPI scripts for laptop mode tools
-Summary(pl):	Skrypty ACPI dla narzêdzi do trybu laptopowego
+Summary(pl.UTF-8):   Skrypty ACPI dla narzÄ™dzi do trybu laptopowego
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	acpid
@@ -41,12 +41,12 @@ Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
 %description acpi
 ACPI scripts for laptop mode tools.
 
-%description acpi -l pl
-Skrypty ACPI dla narzêdzi do trybu laptopowego.
+%description acpi -l pl.UTF-8
+Skrypty ACPI dla narzÄ™dzi do trybu laptopowego.
 
 %package apm
 Summary:	APM scripts for laptop mode tools
-Summary(pl):	Skrypty APM dla narzêdzi do trybu laptopowego
+Summary(pl.UTF-8):   Skrypty APM dla narzÄ™dzi do trybu laptopowego
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	apmd
@@ -55,8 +55,8 @@ Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
 %description apm
 APM scripts for laptop mode tools.
 
-%description apm -l pl
-Skrypty APM dla narzêdzi do trybu laptopowego.
+%description apm -l pl.UTF-8
+Skrypty APM dla narzÄ™dzi do trybu laptopowego.
 
 %prep
 %setup -q
