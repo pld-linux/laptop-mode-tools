@@ -1,5 +1,5 @@
 Summary:	Laptop Mode Tools
-Summary(pl.UTF-8):   Narzędzia do trybu laptopowego
+Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.32
 Release:	1
@@ -32,7 +32,7 @@ poprawę czasu życia baterii.
 
 %package acpi
 Summary:	ACPI scripts for laptop mode tools
-Summary(pl.UTF-8):   Skrypty ACPI dla narzędzi do trybu laptopowego
+Summary(pl.UTF-8):	Skrypty ACPI dla narzędzi do trybu laptopowego
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	acpid
@@ -46,7 +46,7 @@ Skrypty ACPI dla narzędzi do trybu laptopowego.
 
 %package apm
 Summary:	APM scripts for laptop mode tools
-Summary(pl.UTF-8):   Skrypty APM dla narzędzi do trybu laptopowego
+Summary(pl.UTF-8):	Skrypty APM dla narzędzi do trybu laptopowego
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	apmd
