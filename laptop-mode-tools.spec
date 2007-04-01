@@ -13,6 +13,7 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-scripts = %{epoch}:%{version}-%{release}
 BuildArch:	noarch
+ExclusiveArch:	%{ix86} ppc noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
