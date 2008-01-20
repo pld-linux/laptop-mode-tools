@@ -16,7 +16,9 @@ Source1:	%{name}.init
 URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
+%ifarch %{ix86} %{x8664} arm ia64 mips ppc sh
 Requires:	%{name}-scripts = %{epoch}:%{version}-%{release}
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
