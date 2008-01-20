@@ -1,6 +1,7 @@
 #
 # TODO:
 # - subpackage with files for pbbuttonsd and pmud
+# - fix *.conf manuals (should be .5 and referenced as such)
 #
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
@@ -77,10 +78,14 @@ install etc/laptop-mode/conf.d/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/
 install usr/lib/laptop-mode-tools/modules/wireless-ipw-power $RPM_BUILD_ROOT%{_libdir}/%{name}/modules
 install usr/sbin/{laptop_mode,lm-syslog-setup,lm-profiler} $RPM_BUILD_ROOT%{_sbindir}
 
+%ifarch %{ix86} %{x8664} ia64
 install etc/acpi/actions/* $RPM_BUILD_ROOT%{_sysconfdir}/acpi/actions
 install etc/acpi/events/* $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events
+%endif
 
+%ifarch %{ix86} arm mips ppc sh
 install etc/apm/event.d/* $RPM_BUILD_ROOT%{_sysconfdir}/apm/event.d
+%endif
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
 
@@ -114,15 +119,26 @@ fi
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/modules
 %attr(755,root,root) %{_libdir}/%{name}/modules/wireless-ipw-power
-%attr(755,root,root) %{_sbindir}/*
-%{_mandir}/man8/*.8*
+%attr(755,root,root) %{_sbindir}/laptop_mode
+%attr(755,root,root) %{_sbindir}/lm-profiler
+%attr(755,root,root) %{_sbindir}/lm-syslog-setup
+%{_mandir}/man8/laptop_mode.8*
+%{_mandir}/man8/lm-profiler.8*
+%{_mandir}/man8/lm-syslog-setup.8*
+# should be man5
+%{_mandir}/man8/laptop-mode.conf.8*
+%{_mandir}/man8/lm-profiler.conf.8*
 
+%ifarch %{ix86} %{x8664} ia64
 %files acpi
 %defattr(644,root,root,755)
-%attr(750,root,root) %{_sysconfdir}/acpi/*/*
+%attr(755,root,root) %{_sysconfdir}/acpi/actions/lm_*.sh
+%{_sysconfdir}/acpi/events/lm_*
+%endif
 
-%ifarch %{ix86} ppc
+%ifarch %{ix86} arm mips ppc sh
 %files apm
 %defattr(644,root,root,755)
-%attr(750,root,root) %{_sysconfdir}/apm/event.d/*
+# dir not owned
+%attr(755,root,root) %{_sysconfdir}/apm/event.d/laptop-mode
 %endif
