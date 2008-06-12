@@ -11,7 +11,7 @@ start() {
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/laptop-mode-tools ]; then
 		msg_starting "laptop mode"
-		touch /var/run/laptop-mode-enabled
+		touch /var/run/laptop-mode-tools/enabled
 		daemon /usr/sbin/laptop_mode auto
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/laptop-mode-tools
@@ -24,7 +24,7 @@ stop() {
 	if [ -f /var/lock/subsys/laptop-mode-tools ]; then
 		msg_stopping "laptop mode"
 		daemon /usr/sbin/laptop_mode stop
-		rm -f /var/lock/subsys/laptop-mode-tools /var/run/laptop-mode-enabled
+		rm -f /var/lock/subsys/laptop-mode-tools /var/run/laptop-mode-tools/enabled
 	else
 		msg_not_running "laptop mode"
 	fi
@@ -33,6 +33,8 @@ stop() {
 condrestart() {
 	if [ -f /var/lock/subsys/laptop-mode-tools ]; then
 		stop
+		# Now remove files containing stored status, re-enable, and start it up again.
+		rm -fr /var/run/laptop-mode-tools/*
 		start
 	else
 		msg_not_running "laptop mode"
@@ -51,6 +53,8 @@ case "$1" in
 	;;
   restart)
 	stop
+    	# Now remove files containing stored status, re-enable, and start it up again.
+	rm -fr /var/run/laptop-mode-tools/*
 	start
 	;;
   try-restart)
