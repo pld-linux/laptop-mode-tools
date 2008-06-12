@@ -6,12 +6,12 @@
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
-Version:	1.34
-Release:	3
+Version:	1.42
+Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	http://samwel.tk/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
-# Source0-md5:	c6edc3b2abbc3770d6673f155a40473d
+# Source0-md5:	8c11c33a1eaea74f45c708c243f1184a
 Source1:	%{name}.init
 URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -19,6 +19,7 @@ Requires(post,preun):	/sbin/chkconfig
 %ifarch %{ix86} %{x8664} arm ia64 mips ppc sh
 Requires:	%{name}-scripts = %{epoch}:%{version}-%{release}
 %endif
+Suggests:	hdparm
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -65,19 +66,20 @@ APM scripts for laptop mode tools.
 Skrypty APM dla narzędzi do trybu laptopowego.
 
 %prep
-%setup -q
+%setup -q -n %{name}_%{version}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d,apm/event.d,acpi/{actions,events}} \
-	$RPM_BUILD_ROOT{%{_mandir}/man8,%{_libdir}/%{name}/modules,%{_sbindir}} \
-	$RPM_BUILD_ROOT/etc/laptop-mode/{{batt,lm-ac,nolm-ac}-{start,stop},conf.d}
+	$RPM_BUILD_ROOT{%{_mandir}/man8,%{_datadir}/%{name}/modules,%{_sbindir}} \
+	$RPM_BUILD_ROOT/etc/laptop-mode/{{batt,lm-ac,nolm-ac}-{start,stop},conf.d} \
+	$RPM_BUILD_ROOT%{_varrun}/%{name}
 
 install man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
 
 install etc/laptop-mode/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode
 install etc/laptop-mode/conf.d/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/conf.d
-install usr/lib/laptop-mode-tools/modules/wireless-ipw-power $RPM_BUILD_ROOT%{_libdir}/%{name}/modules
+install usr/share/laptop-mode-tools/modules/* $RPM_BUILD_ROOT%{_datadir}/%{name}/modules
 install usr/sbin/{laptop_mode,lm-syslog-setup,lm-profiler} $RPM_BUILD_ROOT%{_sbindir}
 
 %ifarch %{ix86} %{x8664} ia64
@@ -118,9 +120,10 @@ fi
 %dir %{_sysconfdir}/laptop-mode/nolm-ac-start
 %dir %{_sysconfdir}/laptop-mode/nolm-ac-stop
 %attr(754,root,root) /etc/rc.d/init.d/laptop-mode
-%dir %{_libdir}/%{name}
-%dir %{_libdir}/%{name}/modules
-%attr(755,root,root) %{_libdir}/%{name}/modules/wireless-ipw-power
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/modules
+%dir %{_varrun}/%{name}
+%attr(755,root,root) %{_datadir}/%{name}/modules/*
 %attr(755,root,root) %{_sbindir}/laptop_mode
 %attr(755,root,root) %{_sbindir}/lm-profiler
 %attr(755,root,root) %{_sbindir}/lm-syslog-setup
