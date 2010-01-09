@@ -6,12 +6,12 @@
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
-Version:	1.49
+Version:	1.53
 Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	http://samwel.tk/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
-# Source0-md5:	48615d47679869226c88161d1b4e7a55
+# Source0-md5:	38c2bc57ca58055c3f42318dbaa9a3f6
 Source1:	%{name}.init
 URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -141,9 +141,11 @@ fi
 %{_sysconfdir}/acpi/events/lm_*
 %endif
 
+%if 0
 %ifarch %{ix86} arm mips ppc sh
 %files apm
 %defattr(644,root,root,755)
 # dir not owned
 %attr(755,root,root) %{_sysconfdir}/apm/event.d/laptop-mode
+%endif
 %endif
