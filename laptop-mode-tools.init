@@ -1,45 +1,58 @@
 #!/bin/sh
+#
 # laptop-mode-tools
 #
 # chkconfig:	345 20 90
-# description:  laptop-mode-tools
+#
+# description:	laptop-mode-tools
+#
+# processname:	laptop-mode-tools
+#
+# $Id$
 
 # Source function library
 . /etc/rc.d/init.d/functions
 
+# Get service config - may override defaults
+[ -f /etc/sysconfig/laptop-mode-tools ] && . /etc/sysconfig/laptop-mode-tools
+
 start() {
 	# Check if the service is already running?
-	if [ ! -f /var/lock/subsys/laptop-mode-tools ]; then
-		msg_starting "laptop mode"
-		touch /var/run/laptop-mode-tools/enabled
-		daemon /usr/sbin/laptop_mode auto
-		RETVAL=$?
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/laptop-mode-tools
-	else
+	if [ -f /var/lock/subsys/laptop-mode-tools ]; then
 		msg_already_running "laptop mode"
+		return
 	fi
+
+	msg_starting "laptop mode"
+	touch /var/run/laptop-mode-tools/enabled
+	daemon /usr/sbin/laptop_mode auto
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/laptop-mode-tools
 }
 
 stop() {
-	if [ -f /var/lock/subsys/laptop-mode-tools ]; then
-		msg_stopping "laptop mode"
-		daemon /usr/sbin/laptop_mode stop
-		rm -f /var/lock/subsys/laptop-mode-tools /var/run/laptop-mode-tools/enabled
-	else
+	if [ ! -f /var/lock/subsys/laptop-mode-tools ]; then
 		msg_not_running "laptop mode"
+		return
 	fi
+
+	# Stop daemons.
+	msg_stopping "laptop mode"
+	daemon /usr/sbin/laptop_mode stop
+	rm -f /var/lock/subsys/laptop-mode-tools /var/run/laptop-mode-tools/enabled
 }
 
 condrestart() {
-	if [ -f /var/lock/subsys/laptop-mode-tools ]; then
-		stop
-		# Now remove files containing stored status, re-enable, and start it up again.
-		rm -fr /var/run/laptop-mode-tools/*
-		start
-	else
+	if [ ! -f /var/lock/subsys/laptop-mode-tools ]; then
 		msg_not_running "laptop mode"
 		RETVAL=$1
+		return
 	fi
+
+	stop
+	# Remove files containing stored status, re-enable, and start it up again.
+	rm -rf /var/run/laptop-mode-tools/*
+	start
 }
 
 RETVAL=0
@@ -53,7 +66,7 @@ case "$1" in
 	;;
   restart)
 	stop
-    	# Now remove files containing stored status, re-enable, and start it up again.
+	# Remove files containing stored status, re-enable, and start it up again.
 	rm -fr /var/run/laptop-mode-tools/*
 	start
 	;;
@@ -65,7 +78,7 @@ case "$1" in
 	;;
   status)
   	/usr/sbin/laptop_mode status
-	exit $?
+	RETVAL=$?
 	;;
   *)
 	msg_usage "$0 {start|stop|restart|try-restart|force-reload|status}"
