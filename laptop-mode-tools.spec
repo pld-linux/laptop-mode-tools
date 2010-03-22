@@ -1,13 +1,24 @@
 #
+# Conditional build:
+%bcond_with	apm		# build apm package
+%bcond_without	acpi	# build acpi package
+
 # TODO:
 # - subpackage with files for pbbuttonsd and pmud
 # - fix *.conf manuals (should be .5 and referenced as such)
-#
+# - /etc/apm not owned, should it be /etc/pm?
+
+%ifnarch %{ix86} %{x8664} ia64
+%undefine		with_acpi
+%endif
+%ifnarch %{ix86} arm mips ppc sh
+%undefine		with_apm
+%endif
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.53
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/System
 Source0:	http://samwel.tk/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
@@ -16,8 +27,12 @@ Source1:	%{name}.init
 URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
-%ifarch %{ix86} %{x8664} arm ia64 mips ppc sh
-Requires:	%{name}-scripts = %{epoch}:%{version}-%{release}
+%if %{with apm} && %{with acpi}
+Requires:	%{name}-scripts = %{version}-%{release}
+%else
+%{?with_acpi:Requires:	acpid}
+%{?with_apm:Requires:	apmd}
+Obsoletes:	laptop-mode-tools-scripts
 %endif
 Suggests:	hdparm
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -41,9 +56,9 @@ poprawę czasu życia baterii.
 Summary:	ACPI scripts for laptop mode tools
 Summary(pl.UTF-8):	Skrypty ACPI dla narzędzi do trybu laptopowego
 Group:		Applications/System
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Requires:	acpid
-Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
+Provides:	%{name}-scripts = %{version}-%{release}
 
 %description acpi
 ACPI scripts for laptop mode tools.
@@ -55,9 +70,9 @@ Skrypty ACPI dla narzędzi do trybu laptopowego.
 Summary:	APM scripts for laptop mode tools
 Summary(pl.UTF-8):	Skrypty APM dla narzędzi do trybu laptopowego
 Group:		Applications/System
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Requires:	apmd
-Provides:	%{name}-scripts = %{epoch}:%{version}-%{release}
+Provides:	%{name}-scripts = %{version}-%{release}
 
 %description apm
 APM scripts for laptop mode tools.
@@ -70,28 +85,28 @@ Skrypty APM dla narzędzi do trybu laptopowego.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d,apm/event.d,acpi/{actions,events}} \
+install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d} \
 	$RPM_BUILD_ROOT{%{_mandir}/man8,%{_datadir}/%{name}/modules,%{_sbindir}} \
-	$RPM_BUILD_ROOT/etc/laptop-mode/{{batt,lm-ac,nolm-ac}-{start,stop},conf.d} \
+	$RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/{{batt,lm-ac,nolm-ac}-{start,stop},conf.d} \
 	$RPM_BUILD_ROOT%{_varrun}/%{name}
 
-install man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
-
-install etc/laptop-mode/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode
-install etc/laptop-mode/conf.d/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/conf.d
+install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
+cp -a etc/laptop-mode/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode
+cp -a etc/laptop-mode/conf.d/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/conf.d
 install usr/share/laptop-mode-tools/modules/* $RPM_BUILD_ROOT%{_datadir}/%{name}/modules
-install usr/sbin/{laptop_mode,lm-syslog-setup,lm-profiler} $RPM_BUILD_ROOT%{_sbindir}
+install -p usr/sbin/{laptop_mode,lm-syslog-setup,lm-profiler} $RPM_BUILD_ROOT%{_sbindir}
+cp -a man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
 
-%ifarch %{ix86} %{x8664} ia64
-install etc/acpi/actions/* $RPM_BUILD_ROOT%{_sysconfdir}/acpi/actions
-install etc/acpi/events/* $RPM_BUILD_ROOT%{_sysconfdir}/acpi/events
+%if %{with acpi}
+install -d $RPM_BUILD_ROOT/etc/acpi/{actions,events}
+install -p etc/acpi/actions/* $RPM_BUILD_ROOT/etc/acpi/actions
+install -p etc/acpi/events/* $RPM_BUILD_ROOT/etc/acpi/events
 %endif
 
-%ifarch %{ix86} arm mips ppc sh
-install etc/apm/event.d/* $RPM_BUILD_ROOT%{_sysconfdir}/apm/event.d
+%if %{with apm}
+install -d $RPM_BUILD_ROOT/etc/apm/event.d
+install -p etc/apm/event.d/* $RPM_BUILD_ROOT/etc/apm/event.d
 %endif
-
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -134,18 +149,18 @@ fi
 %{_mandir}/man8/laptop-mode.conf.8*
 %{_mandir}/man8/lm-profiler.conf.8*
 
-%ifarch %{ix86} %{x8664} ia64
-%files acpi
+%if %{with acpi}
+# skip subpackage if only one backend built
+%{?with_apm:%files acpi}
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sysconfdir}/acpi/actions/lm_*.sh
 %{_sysconfdir}/acpi/events/lm_*
 %endif
 
-%if 0
-%ifarch %{ix86} arm mips ppc sh
-%files apm
+%if %{with apm}
+# skip subpackage if only one backend built
+%{?with_acpi:%files apm}
 %defattr(644,root,root,755)
-# dir not owned
+# XXX: dir not owned
 %attr(755,root,root) %{_sysconfdir}/apm/event.d/laptop-mode
-%endif
 %endif
