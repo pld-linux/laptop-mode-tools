@@ -17,12 +17,12 @@
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
-Version:	1.55
+Version:	1.57
 Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	http://samwel.tk/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
-# Source0-md5:	fda9255375de2dd3b86526da39160cf0
+# Source0-md5:	1d9e4f4e3ff3f16d298e1653483f3f58
 Source1:	%{name}.init
 URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
