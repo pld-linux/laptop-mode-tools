@@ -24,6 +24,7 @@ Group:		Applications/System
 Source0:	http://samwel.tk/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
 # Source0-md5:	c7a234ada284eaaece0e04bd260e87af
 Source1:	%{name}.init
+Source2:	%{name}.tmpfiles
 Patch0:		%{name}-kver.patch
 URL:		http://www.samwel.tk/laptop_mode/
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -90,7 +91,8 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d} \
 	$RPM_BUILD_ROOT{%{_mandir}/man8,%{_datadir}/%{name}/modules,%{_sbindir}} \
 	$RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/{{batt,lm-ac,nolm-ac}-{start,stop},conf.d} \
-	$RPM_BUILD_ROOT%{_varrun}/%{name}
+	$RPM_BUILD_ROOT%{_varrun}/%{name} \
+	$RPM_BUILD_ROOT/usr/lib/tmpfiles.d
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
 cp -a etc/laptop-mode/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode
@@ -98,6 +100,8 @@ cp -a etc/laptop-mode/conf.d/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/co
 install usr/share/laptop-mode-tools/modules/* $RPM_BUILD_ROOT%{_datadir}/%{name}/modules
 install -p usr/sbin/{laptop_mode,lm-syslog-setup,lm-profiler} $RPM_BUILD_ROOT%{_sbindir}
 cp -a man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
+
+install %{SOURCE2} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{name}.conf
 
 %if %{with acpi}
 install -d $RPM_BUILD_ROOT/etc/acpi/{actions,events}
@@ -140,6 +144,7 @@ fi
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/modules
 %dir %{_varrun}/%{name}
+/usr/lib/tmpfiles.d/%{name}.conf
 %attr(755,root,root) %{_datadir}/%{name}/modules/*
 %attr(755,root,root) %{_sbindir}/laptop_mode
 %attr(755,root,root) %{_sbindir}/lm-profiler
