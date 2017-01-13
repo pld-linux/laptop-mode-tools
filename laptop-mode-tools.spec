@@ -17,16 +17,14 @@
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
-Version:	1.58
-Release:	2
+Version:	1.71
+Release:	1
 License:	GPL
 Group:		Applications/System
-Source0:	http://samwel.tk/laptop_mode/tools/downloads/%{name}_%{version}.tar.gz
-# Source0-md5:	c7a234ada284eaaece0e04bd260e87af
+Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}.tar.gz
+# Source0-md5:	8b9a2d9db7dd9d0a99b635a1185f292c
 Source1:	%{name}.init
-Source2:	%{name}.tmpfiles
-Patch0:		%{name}-kver.patch
-URL:		http://www.samwel.tk/laptop_mode/
+URL:		https://github.com/rickysarraf/laptop-mode-tools
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 %if %{with apm} && %{with acpi}
@@ -83,36 +81,22 @@ APM scripts for laptop mode tools.
 Skrypty APM dla narzędzi do trybu laptopowego.
 
 %prep
-%setup -q -n %{name}_%{version}
-%patch0 -p1
+%setup -q
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d} \
-	$RPM_BUILD_ROOT{%{_mandir}/man8,%{_datadir}/%{name}/modules,%{_sbindir}} \
-	$RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/{{batt,lm-ac,nolm-ac}-{start,stop},conf.d} \
-	$RPM_BUILD_ROOT%{_varrun}/%{name} \
-	$RPM_BUILD_ROOT/usr/lib/tmpfiles.d
+
+%{__make} install \
+	INSTALL=install \
+	INIT_D=$RPM_BUILD_ROOT/etc/rc.d/init.d \
+	ULIB_D=%{_libdir} \
+	MAN_D=%{_mandir} \
+	TMPFILES_D=/usr/lib/tmpfiles.d \
+	%{!?with_acpi:ACPI=disabled} \
+	%{!?with_apm:APM=disabled} \
+	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
-cp -a etc/laptop-mode/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode
-cp -a etc/laptop-mode/conf.d/*.conf $RPM_BUILD_ROOT%{_sysconfdir}/laptop-mode/conf.d
-install usr/share/laptop-mode-tools/modules/* $RPM_BUILD_ROOT%{_datadir}/%{name}/modules
-install -p usr/sbin/{laptop_mode,lm-syslog-setup,lm-profiler} $RPM_BUILD_ROOT%{_sbindir}
-cp -a man/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
-
-install %{SOURCE2} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{name}.conf
-
-%if %{with acpi}
-install -d $RPM_BUILD_ROOT/etc/acpi/{actions,events}
-install -p etc/acpi/actions/* $RPM_BUILD_ROOT/etc/acpi/actions
-install -p etc/acpi/events/* $RPM_BUILD_ROOT/etc/acpi/events
-%endif
-
-%if %{with apm}
-install -d $RPM_BUILD_ROOT/etc/apm/event.d
-install -p etc/apm/event.d/* $RPM_BUILD_ROOT/etc/apm/event.d
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -129,7 +113,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc README Documentation/*
+%doc README.md Documentation/*
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/laptop-mode/*.conf
 %dir %{_sysconfdir}/laptop-mode
 %dir %{_sysconfdir}/laptop-mode/batt-start
@@ -141,11 +125,19 @@ fi
 %dir %{_sysconfdir}/laptop-mode/nolm-ac-start
 %dir %{_sysconfdir}/laptop-mode/nolm-ac-stop
 %attr(754,root,root) /etc/rc.d/init.d/laptop-mode
+%attr(755,root,root) /lib/udev/lmt-udev
+/lib/udev/rules.d/99-laptop-mode.rules
+/usr/lib/tmpfiles.d/laptop-mode.conf
+/lib/systemd/system/laptop-mode.service
+/lib/systemd/system/laptop-mode.timer
+/lib/systemd/system/lmt-poll.service
+%dir %{_libdir}/pm-utils/sleep.d
+%attr(755,root,root) %{_libdir}/pm-utils/sleep.d/01laptop-mode
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/modules
-%dir %{_varrun}/%{name}
-/usr/lib/tmpfiles.d/%{name}.conf
 %attr(755,root,root) %{_datadir}/%{name}/modules/*
+%dir %{_datadir}/%{name}/module-helpers
+%attr(755,root,root) %{_datadir}/%{name}/module-helpers/*
 %attr(755,root,root) %{_sbindir}/laptop_mode
 %attr(755,root,root) %{_sbindir}/lm-profiler
 %attr(755,root,root) %{_sbindir}/lm-syslog-setup
