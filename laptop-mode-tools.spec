@@ -25,7 +25,8 @@ Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}.tar
 # Source0-md5:	8b9a2d9db7dd9d0a99b635a1185f292c
 Source1:	%{name}.init
 URL:		https://github.com/rickysarraf/laptop-mode-tools
-BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpm-pythonprov
+BuildRequires:	rpmbuild(macros) >= 1.714
 Requires(post,preun):	/sbin/chkconfig
 %if %{with apm} && %{with acpi}
 Requires:	%{name}-scripts = %{version}-%{release}
@@ -80,11 +81,29 @@ APM scripts for laptop mode tools.
 %description apm -l pl.UTF-8
 Skrypty APM dla narzędzi do trybu laptopowego.
 
+%package gui
+Summary:	GUI for laptop mode tools
+Summary(pl.UTF-8):	GUI dla narzędzi do trybu laptopowego
+Group:		Applications/X11
+Requires:	python-PyQt4
+Requires:	python-modules
+Requires:	%{name} = %{version}-%{release}
+BuildArch:	noarch
+
+%description gui
+GUI for laptop mode tools.
+
+%description gui -l pl.UTF-8
+GUI dla narzędzi do trybu laptopowego.
+
 %prep
 %setup -q
 
+%{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
+
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT%{_bindir}
 
 %{__make} install \
 	INSTALL=install \
@@ -97,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
+
+install -p gui/LMT.py $RPM_BUILD_ROOT%{_datadir}/%{name}/lmt.py
+install -p gui/lmt-config-gui $RPM_BUILD_ROOT%{_bindir}/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -163,3 +185,9 @@ fi
 # XXX: dir not owned
 %attr(755,root,root) %{_sysconfdir}/apm/event.d/laptop-mode
 %endif
+
+%files gui
+%defattr(644,root,root,755)
+%{_datadir}/%{name}/lmt.py
+%attr(755,root,root) %{_bindir}/lmt-config-gui
+%{_datadir}/polkit-1/actions/org.linux.lmt.gui.policy
