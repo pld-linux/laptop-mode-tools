@@ -1,0 +1,8 @@
+--- laptop-mode-tools-1.71/usr/sbin/laptop_mode~	2017-01-12 17:06:23.000000000 +0900
++++ laptop-mode-tools-1.71/usr/sbin/laptop_mode	2017-01-20 04:32:11.006938756 +0900
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#! /bin/bash
+ #
+ # Script to start or stop laptop_mode, and to control various settings of the
+ # kernel, hardware etc. that influence power consumption.
