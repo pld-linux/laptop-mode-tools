@@ -21,7 +21,7 @@ Version:	1.71
 Release:	1
 License:	GPL
 Group:		Applications/System
-Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}.tar.gz
+Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	8b9a2d9db7dd9d0a99b635a1185f292c
 Source1:	%{name}.init
 Patch0:		no-exec-redirection.patch
