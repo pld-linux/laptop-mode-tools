@@ -18,7 +18,7 @@ Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.71
-Release:	2
+Release:	3
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{name}-%{version}.tar.gz
@@ -26,7 +26,6 @@ Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{n
 Source1:	%{name}.init
 Patch0:		no-exec-redirection.patch
 Patch1:		cpufreq-pstate.patch
-Patch2:		sata-alpm.patch
 URL:		https://github.com/rickysarraf/laptop-mode-tools
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -105,7 +104,6 @@ GUI dla narzędzi do trybu laptopowego.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
 
