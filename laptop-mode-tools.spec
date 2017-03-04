@@ -25,6 +25,7 @@ Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{n
 # Source0-md5:	8b9a2d9db7dd9d0a99b635a1185f292c
 Source1:	%{name}.init
 Patch0:		no-exec-redirection.patch
+Patch1:		cpufreq-pstate.patch
 URL:		https://github.com/rickysarraf/laptop-mode-tools
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -102,6 +103,7 @@ GUI dla narzędzi do trybu laptopowego.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
 
