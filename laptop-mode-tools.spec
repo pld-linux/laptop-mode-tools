@@ -1,6 +1,6 @@
 #
 # Conditional build:
-%bcond_with	apm		# build apm package
+%bcond_with	apm	# build apm package
 %bcond_without	acpi	# build acpi package
 
 # TODO:
@@ -18,14 +18,17 @@ Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.71
-Release:	3
+Release:	4
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	8b9a2d9db7dd9d0a99b635a1185f292c
 Source1:	%{name}.init
+Source2:	lmt-config-gui.desktop
 Patch0:		no-exec-redirection.patch
 Patch1:		cpufreq-pstate.patch
+Patch2:		wireless-power-on-off-fix.patch
+Patch3:		wireless-power-no-iw-txpower.patch
 URL:		https://github.com/rickysarraf/laptop-mode-tools
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -83,6 +86,15 @@ APM scripts for laptop mode tools.
 %description apm -l pl.UTF-8
 Skrypty APM dla narzędzi do trybu laptopowego.
 
+%package -n pm-utils-lmt
+Summary:	Laptop mode tools script for pm-utils
+Group:		Applications/System
+Requires:	%{name} = %{version}-%{release}
+Requires:	pm-utils
+
+%description -n pm-utils-lmt
+Laptop mode tools script for pm-utils.
+
 %package gui
 Summary:	GUI for laptop mode tools
 Summary(pl.UTF-8):	GUI dla narzędzi do trybu laptopowego
@@ -104,12 +116,14 @@ GUI dla narzędzi do trybu laptopowego.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_bindir}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_desktopdir}}
 
 %{__make} install \
 	INSTALL=install \
@@ -122,6 +136,7 @@ install -d $RPM_BUILD_ROOT%{_bindir}
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
+install -p %{SOURCE2} $RPM_BUILD_ROOT/%{_desktopdir}
 
 install -p gui/LMT.py $RPM_BUILD_ROOT%{_datadir}/%{name}/lmt.py
 install -p gui/lmt-config-gui $RPM_BUILD_ROOT%{_bindir}/
@@ -159,8 +174,6 @@ fi
 /lib/systemd/system/laptop-mode.service
 /lib/systemd/system/laptop-mode.timer
 /lib/systemd/system/lmt-poll.service
-%dir %{_libdir}/pm-utils/sleep.d
-%attr(755,root,root) %{_libdir}/pm-utils/sleep.d/01laptop-mode
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/modules
 %attr(755,root,root) %{_datadir}/%{name}/modules/*
@@ -192,8 +205,13 @@ fi
 %attr(755,root,root) %{_sysconfdir}/apm/event.d/laptop-mode
 %endif
 
+%files -n pm-utils-lmt
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/pm-utils/sleep.d/01laptop-mode
+
 %files gui
 %defattr(644,root,root,755)
 %{_datadir}/%{name}/lmt.py
 %attr(755,root,root) %{_bindir}/lmt-config-gui
 %{_datadir}/polkit-1/actions/org.linux.lmt.gui.policy
+%{_desktopdir}/lmt-config-gui.desktop
