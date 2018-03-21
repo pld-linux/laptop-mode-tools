@@ -1,0 +1,90 @@
+diff -urN laptop-mode-tools-1.72.2/etc/laptop-mode/conf.d/intel_perf_bias.conf laptop-mode-tools-1.72.2-perf_bias/etc/laptop-mode/conf.d/intel_perf_bias.conf
+--- laptop-mode-tools-1.72.2/etc/laptop-mode/conf.d/intel_perf_bias.conf	1970-01-01 01:00:00.000000000 +0100
++++ laptop-mode-tools-1.72.2-perf_bias/etc/laptop-mode/conf.d/intel_perf_bias.conf	2018-03-21 21:39:56.484459906 +0100
+@@ -0,0 +1,43 @@
++#
++# Configuration file for Laptop Mode Tools module intel_perf_bias.
++#
++# For more information, consult the laptop-mode.conf(8) manual page.
++#
++
++###############################################################################
++# Manage Energy vs. Performance Policy via x86 Model Specific Registers
++# -------------------------------------------------
++#
++#__COMMENT Laptop mode tools can automatically adjust your kernel CPU performance
++#__COMMENT vs. energy policy.
++#__COMMENT
++#__COMMENT See x86_energy_perf_policy(8) or cpupower-set(1) for details.
++#
++###############################################################################
++
++# Enable debug mode for this module
++# Set to 1 if you want to debug this module
++DEBUG=0
++
++#
++# Should laptop mode tools control the CPU energy policy settings?
++#
++# Set to 0 to disable
++CONTROL_INTEL_PERF_BIAS="auto"
++
++# The range of valid numbers is 0-15,
++# where 0 is maximum performance and 15 is maximum energy efficiency.
++# performance         0
++# balance-performance 4
++# normal, default     6
++# balance-power       8
++# power               15
++
++#On AC, Laptop Mode Tools inactive
++NOLM_AC_INTEL_PERF_BIAS=0 # Performance
++
++#On AC, Laptop Mode Tools active
++LM_AC_INTEL_PERF_BIAS=0 # Performance
++
++#On battery
++BATT_INTEL_PERF_BIAS=8 # Balance-power
+diff -urN laptop-mode-tools-1.72.2/usr/share/laptop-mode-tools/modules/intel_perf_bias laptop-mode-tools-1.72.2-perf_bias/usr/share/laptop-mode-tools/modules/intel_perf_bias
+--- laptop-mode-tools-1.72.2/usr/share/laptop-mode-tools/modules/intel_perf_bias	1970-01-01 01:00:00.000000000 +0100
++++ laptop-mode-tools-1.72.2-perf_bias/usr/share/laptop-mode-tools/modules/intel_perf_bias	2018-03-21 21:55:32.250744460 +0100
+@@ -0,0 +1,39 @@
++#! /bin/sh
++#
++# Laptop mode tools module that handles Intel's performance policy.
++#
++
++X86_ENERGY_PERF_POLICY=$(which x86_energy_perf_policy 2>/dev/null)
++CPUPOWER=$(which cpupower 2>/dev/null)
++
++# Set perf bias value
++# Parameter 1: the value
++set_intel_perf_bias_param () {
++	local RESULT=1
++
++	if [ -x "$X86_ENERGY_PERF_POLICY" ]; then
++		log "VERBOSE" "Executing: '$X86_ENERGY_PERF_POLICY $1'"
++		x86_energy_perf_policy $1
++		RESULT=$?
++	elif [ -x "$CPUPOWER" ]; then
++		log "VERBOSE" "Executing: '$CPUPOWER set -b $1'"
++		cpupower set -b $1
++		RESULT=$?
++	fi
++	if [ $RESULT != 0 ]; then
++		echo "SETTING CPU PERFORMANCE POLICY FAILED"
++	fi
++}
++
++if [ x$CONTROL_INTEL_PERF_BIAS = x1 ] || [ x$ENABLE_AUTO_MODULES = x1 -a x$CONTROL_INTEL_PERF_BIAS = xauto ]; then
++	if [ $ON_AC -eq 1 ] ; then
++		if [ "$ACTIVATE" -eq 1 ] ; then
++			INTEL_PERF_BIAS="$LM_AC_INTEL_PERF_BIAS"
++		else
++			INTEL_PERF_BIAS="$NOLM_AC_INTEL_PERF_BIAS"
++		fi
++	else
++		INTEL_PERF_BIAS="$BATT_INTEL_PERF_BIAS"
++	fi
++	set_intel_perf_bias_param "$INTEL_PERF_BIAS"
++fi

@@ -18,7 +18,7 @@ Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.72.2
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{name}-%{version}.tar.gz
@@ -26,6 +26,7 @@ Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{n
 Source1:	%{name}.init
 Patch0:		no-exec-redirection.patch
 Patch1:		cpufreq-pstate.patch
+Patch2:		intel_perf_bias.patch
 URL:		https://github.com/rickysarraf/laptop-mode-tools
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -113,6 +114,7 @@ GUI dla narzędzi do trybu laptopowego.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
 
@@ -131,6 +133,8 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_desktopdir}}
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
+
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/%{name}/{LMT,lmt}.py
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -202,9 +206,9 @@ fi
 
 %files gui
 %defattr(644,root,root,755)
-%{_datadir}/%{name}/LMT.py
 %attr(755,root,root) %{_sbindir}/lmt-config-gui
 %attr(755,root,root) %{_sbindir}/lmt-config-gui-pkexec
+%{_datadir}/%{name}/lmt.py
 %{_datadir}/polkit-1/actions/org.linux.lmt.gui.policy
 %{_desktopdir}/laptop-mode-tools.desktop
 %{_pixmapsdir}/laptop-mode-tools.svg
