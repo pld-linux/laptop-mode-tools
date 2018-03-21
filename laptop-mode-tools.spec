@@ -17,18 +17,15 @@
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
-Version:	1.71
-Release:	4
+Version:	1.72.2
+Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	8b9a2d9db7dd9d0a99b635a1185f292c
+# Source0-md5:	8a7b3658b0137ce893fe6a224fffd7ba
 Source1:	%{name}.init
-Source2:	lmt-config-gui.desktop
 Patch0:		no-exec-redirection.patch
 Patch1:		cpufreq-pstate.patch
-Patch2:		wireless-power-on-off-fix.patch
-Patch3:		wireless-power-no-iw-txpower.patch
 URL:		https://github.com/rickysarraf/laptop-mode-tools
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -116,8 +113,6 @@ GUI dla narzędzi do trybu laptopowego.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
 
@@ -130,16 +125,12 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_desktopdir}}
 	INIT_D=$RPM_BUILD_ROOT/etc/rc.d/init.d \
 	ULIB_D=%{_libdir} \
 	MAN_D=%{_mandir} \
-	TMPFILES_D=/usr/lib/tmpfiles.d \
+	TMPFILES_D=%{systemdtmpfilesdir} \
 	%{!?with_acpi:ACPI=disabled} \
 	%{!?with_apm:APM=disabled} \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
-install -p %{SOURCE2} $RPM_BUILD_ROOT/%{_desktopdir}
-
-install -p gui/LMT.py $RPM_BUILD_ROOT%{_datadir}/%{name}/lmt.py
-install -p gui/lmt-config-gui $RPM_BUILD_ROOT%{_bindir}/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -170,10 +161,10 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/laptop-mode
 %attr(755,root,root) /lib/udev/lmt-udev
 /lib/udev/rules.d/99-laptop-mode.rules
-/usr/lib/tmpfiles.d/laptop-mode.conf
-/lib/systemd/system/laptop-mode.service
-/lib/systemd/system/laptop-mode.timer
-/lib/systemd/system/lmt-poll.service
+%{systemdtmpfilesdir}/laptop-mode.conf
+%{systemdunitdir}/laptop-mode.service
+%{systemdunitdir}/laptop-mode.timer
+%{systemdunitdir}/lmt-poll.service
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/modules
 %attr(755,root,root) %{_datadir}/%{name}/modules/*
@@ -211,7 +202,9 @@ fi
 
 %files gui
 %defattr(644,root,root,755)
-%{_datadir}/%{name}/lmt.py
-%attr(755,root,root) %{_bindir}/lmt-config-gui
+%{_datadir}/%{name}/LMT.py
+%attr(755,root,root) %{_sbindir}/lmt-config-gui
+%attr(755,root,root) %{_sbindir}/lmt-config-gui-pkexec
 %{_datadir}/polkit-1/actions/org.linux.lmt.gui.policy
-%{_desktopdir}/lmt-config-gui.desktop
+%{_desktopdir}/laptop-mode-tools.desktop
+%{_pixmapsdir}/laptop-mode-tools.svg
