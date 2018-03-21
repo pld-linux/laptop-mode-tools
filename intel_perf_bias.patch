@@ -1,7 +1,7 @@
 diff -urN laptop-mode-tools-1.72.2/etc/laptop-mode/conf.d/intel_perf_bias.conf laptop-mode-tools-1.72.2-perf_bias/etc/laptop-mode/conf.d/intel_perf_bias.conf
 --- laptop-mode-tools-1.72.2/etc/laptop-mode/conf.d/intel_perf_bias.conf	1970-01-01 01:00:00.000000000 +0100
 +++ laptop-mode-tools-1.72.2-perf_bias/etc/laptop-mode/conf.d/intel_perf_bias.conf	2018-03-21 21:39:56.484459906 +0100
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,44 @@
 +#
 +# Configuration file for Laptop Mode Tools module intel_perf_bias.
 +#
@@ -15,7 +15,8 @@ diff -urN laptop-mode-tools-1.72.2/etc/laptop-mode/conf.d/intel_perf_bias.conf l
 +#__COMMENT Laptop mode tools can automatically adjust your kernel CPU performance
 +#__COMMENT vs. energy policy.
 +#__COMMENT
-+#__COMMENT See x86_energy_perf_policy(8) or cpupower-set(1) for details.
++#__COMMENT See x86_energy_perf_policy(8) or cpupower-set(1) for details,
++#__COMMENT and https://patchwork.kernel.org/patch/8439681/ for background.
 +#
 +###############################################################################
 +
