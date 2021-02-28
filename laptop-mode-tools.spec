@@ -100,9 +100,7 @@ Group:		Applications/X11
 Requires:	python-PyQt4
 Requires:	python-modules
 Requires:	%{name} = %{version}-%{release}
-%if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
-%endif
 
 %description gui
 GUI for laptop mode tools.
