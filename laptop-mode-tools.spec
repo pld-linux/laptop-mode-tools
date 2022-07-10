@@ -46,6 +46,9 @@ Obsoletes:	laptop-mode-tools-scripts < %{version}-%{release}
 Suggests:	hdparm
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+# no binaries; not noarch because of libdir paths
+%define		_enable_debug_packages	0
+
 %description
 Laptop mode (also known as laptopmode, laptop-mode and laptop_mode,
 for search engine purposes :) ) is a kernel "mode" that allows you to
