@@ -11,7 +11,7 @@
 %ifnarch %{ix86} %{x8664} ia64
 %undefine		with_acpi
 %endif
-%ifnarch %{ix86} arm mips ppc sh
+%ifnarch %{ix86} %{arm} mips ppc sh
 %undefine		with_apm
 %endif
 Summary:	Laptop Mode Tools
@@ -36,7 +36,9 @@ Requires:	%{name}-scripts = %{version}-%{release}
 %else
 %{?with_acpi:Requires:	acpid}
 %{?with_apm:Requires:	apmd}
-Obsoletes:	laptop-mode-tools-scripts
+Obsoletes:	laptop-mode-tools-acpi < %{version}-%{release}
+Obsoletes:	laptop-mode-tools-apm < %{version}-%{release}
+Obsoletes:	laptop-mode-tools-scripts < %{version}-%{release}
 %endif
 Suggests:	hdparm
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
