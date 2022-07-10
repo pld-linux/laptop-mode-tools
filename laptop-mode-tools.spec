@@ -1,12 +1,14 @@
+# TODO:
+# - unpackaged:
+#   /etc/power/event.d/laptop-mode
+#   /etc/power/scripts.d/laptop-mode
+# - (PPC) subpackage with files for pbbuttonsd and pmud
+# - fix *.conf manuals (should be .5 and referenced as such)
+# - /etc/apm not owned, should it be /etc/pm?
 #
 # Conditional build:
 %bcond_with	apm	# build apm package
 %bcond_without	acpi	# build acpi package
-
-# TODO:
-# - subpackage with files for pbbuttonsd and pmud
-# - fix *.conf manuals (should be .5 and referenced as such)
-# - /etc/apm not owned, should it be /etc/pm?
 
 %ifnarch %{ix86} %{x8664} ia64
 %undefine		with_acpi
@@ -17,17 +19,18 @@
 Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
-Version:	1.72.2
-Release:	2
-License:	GPL
+Version:	1.74
+Release:	1
+License:	GPL v2+
 Group:		Applications/System
-Source0:	https://github.com/rickysarraf/laptop-mode-tools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	8a7b3658b0137ce893fe6a224fffd7ba
+#Source0Download: https://github.com/rickysarraf/laptop-mode-tools/releases
+Source0:	https://github.com/rickysarraf/laptop-mode-tools/releases/download/%{version}/%{name}_%{version}.tar.gz
+# Source0-md5:	c035e95e24f6f368952a20414c4ac224
 Source1:	%{name}.init
 Patch0:		no-exec-redirection.patch
-Patch1:		cpufreq-pstate.patch
 Patch2:		intel_perf_bias.patch
 URL:		https://github.com/rickysarraf/laptop-mode-tools
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
 Requires(post,preun):	/sbin/chkconfig
@@ -99,9 +102,9 @@ Laptop mode tools script for pm-utils.
 Summary:	GUI for laptop mode tools
 Summary(pl.UTF-8):	GUI dla narzędzi do trybu laptopowego
 Group:		Applications/X11
-Requires:	python-PyQt4
-Requires:	python-modules
 Requires:	%{name} = %{version}-%{release}
+Requires:	python3-PyQt5
+Requires:	python3-modules
 BuildArch:	noarch
 
 %description gui
@@ -111,12 +114,11 @@ GUI for laptop mode tools.
 GUI dla narzędzi do trybu laptopowego.
 
 %prep
-%setup -q
+%setup -q -n %{name}_%{version}
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 
-%{__sed} -i -e 's|/usr/bin/env python2|/usr/bin/python|' gui/LMT.py
+%{__sed} -i -e '1s|/usr/bin/env python3|%{__python3}|' gui/lmt.py
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -133,8 +135,6 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_desktopdir}}
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
-
-%{__mv} $RPM_BUILD_ROOT%{_datadir}/%{name}/{LMT,lmt}.py
 
 %clean
 rm -rf $RPM_BUILD_ROOT
