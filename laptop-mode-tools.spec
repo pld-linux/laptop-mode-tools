@@ -118,8 +118,8 @@ GUI dla narzędzi do trybu laptopowego.
 
 %prep
 %setup -q -n %{name}_%{version}
-%patch0 -p1
-%patch2 -p1
+%patch -P0 -p1
+%patch -P2 -p1
 
 %{__sed} -i -e '1s|/usr/bin/env python3|%{__python3}|' gui/lmt.py
 
