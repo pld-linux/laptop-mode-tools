@@ -7,8 +7,9 @@
 # - /etc/apm not owned, should it be /etc/pm?
 #
 # Conditional build:
-%bcond_with	apm	# build apm package
-%bcond_without	acpi	# build acpi package
+%bcond_with	apm		# build apm package
+%bcond_without	acpi		# build acpi package
+%bcond_with	pm_utils	# build pm-utils package
 
 %ifnarch %{ix86} %{x8664} ia64
 %undefine		with_acpi
@@ -20,7 +21,7 @@ Summary:	Laptop Mode Tools
 Summary(pl.UTF-8):	Narzędzia do trybu laptopowego
 Name:		laptop-mode-tools
 Version:	1.74
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Applications/System
 #Source0Download: https://github.com/rickysarraf/laptop-mode-tools/releases
@@ -135,6 +136,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_desktopdir}}
 	TMPFILES_D=%{systemdtmpfilesdir} \
 	%{!?with_acpi:ACPI=disabled} \
 	%{!?with_apm:APM=disabled} \
+	%{!?with_pm_utils:PMU=disabled} \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/laptop-mode
@@ -203,9 +205,11 @@ fi
 %attr(755,root,root) %{_sysconfdir}/apm/event.d/laptop-mode
 %endif
 
+%if %{with pm_utils}
 %files -n pm-utils-lmt
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/pm-utils/sleep.d/01laptop-mode
+%endif
 
 %files gui
 %defattr(644,root,root,755)
